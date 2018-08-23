@@ -1,6 +1,6 @@
 <template>
   <transition name="cool-toast">
-    <div class="cool-toast-box" v-show="visible">
+    <div class="cool-toast-box" v-if="visible">
       <div class="cool-toast-content" :class="customClass">
         {{message}}
       </div>
@@ -53,6 +53,9 @@ export default {
         case "error":
           classes.push("type-error ");
           break;
+        case "white":
+          classes.push("type-white ");
+          break;
         default:
           classes.push("type-default ");
       }
@@ -76,9 +79,9 @@ export default {
     max-width: 80%;
     border-radius: 5px;
     padding: 8px 16px;
-
     font-size: 14px;
     position: absolute;
+    font-family: "微软雅黑";
     z-index: 1000;
   }
   .place-top {
@@ -112,12 +115,17 @@ export default {
     background: rgba($color: #faa5a5, $alpha: 0.8);
     color: #e72525;
   }
+  .type-white {
+    background: #fff;
+    color: #000;
+    border: 1px solid #000;
+  }
 }
 .cool-toast-enter-active {
-  animation: bounce-in 0.3s;
+  animation: bounce-in 0.2s;
 }
 .cool-toast-leave-active {
-  animation: bounce-in 0.5s reverse;
+  animation: bounce-in 0.3s reverse;
 }
 @keyframes bounce-in {
   0% {

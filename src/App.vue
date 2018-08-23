@@ -31,7 +31,8 @@ export default {
   methods: {
     handleClick() {
       this.$toast({
-        message: "哈哈哈哈哈哈哈哈"
+        message: "哈哈哈哈哈哈哈哈",
+        type: 'white'
       });
     }
   }
