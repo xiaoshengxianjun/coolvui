@@ -118,7 +118,7 @@ export default {
   .type-white {
     background: #fff;
     color: #000;
-    border: 1px solid #000;
+    border: 1px solid #333;
   }
 }
 .cool-toast-enter-active {
