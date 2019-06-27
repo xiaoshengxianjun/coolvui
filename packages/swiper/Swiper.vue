@@ -1,7 +1,7 @@
 <template>
   <div class="swiper-component" @touchstart="onTouchStart" @touchend="onTouchEnd" :style="{height:height}">
     <ul :style="[ulStyle, swiperStyle]">
-      <li v-for="(item, ind) in list" :key="ind" :style="{width: itemWidth + 'px'}" :class="[index===ind?'active':'', effect]">
+      <li v-for="(item, ind) in list" :key="ind" :style="{width: itemWidth + 'px'}" :class="[index===ind?'active':'', effect]" @click="handleClick(item)">
         <img :src="item.img">
       </li>
     </ul>
@@ -46,22 +46,36 @@ export default {
       default: "zoom" // 轮播图的样式类型，默认正常类型 normal，可选：zoom（缩放）
     }
   },
-  created() {
-    if (this.effect === "normal") {
-      // 如果是正常模式，一张图的宽度为屏幕宽度
-      this.itemWidth = document.body.clientWidth; // 获取屏幕的宽度
-    } else if (this.effect === "zoom") {
-      // 如果是缩放模式，控制轮播图显示的宽度，两边流出空隙
-      this.itemWidth = document.body.clientWidth - 40; // 获取屏幕的宽度
-    }
-    this.handleType();
-    var length = this.list.length; // 获取列表的个数
-    this.ulStyle.width = parseInt((this.itemWidth + 40) * length) + "px"; // 容器总宽度
-  },
   mounted() {
+    this.calcWidth();
     this.handleLoopMove();
   },
   methods: {
+    /**
+     * 初始化时的一些宽度计算操作
+     */
+    calcWidth() {
+      // 页面更新后执行宽度计算
+      this.$nextTick(function() {
+        if (this.effect === "normal") {
+          // 如果是正常模式，一张图的宽度为屏幕宽度
+          this.itemWidth = document.body.clientWidth; // 获取屏幕的宽度
+        } else if (this.effect === "zoom") {
+          // 如果是缩放模式，控制轮播图显示的宽度，两边流出空隙
+          this.itemWidth = document.body.clientWidth - 40; // 获取屏幕的宽度
+        }
+        this.handleType();
+        var length = this.list.length; // 获取列表的个数
+        this.ulStyle.width = parseInt((this.itemWidth + 40) * length) + "px"; // 容器总宽度
+      });
+    },
+    /**
+     * 轮播图点击事件
+     */
+    handleClick(val) {
+      // 触发外部事件，将点击的轮播图详情数据返回
+      this.$emit("onClick", val);
+    },
     /**
      * 判断轮播类型，根据类型执行对应的操作
      */
@@ -96,7 +110,7 @@ export default {
     handleLoopMove() {
       // 当设置自动播放时，执行自动循环播放操作，否则，只执行下一次轮播效果
       if (this.options.autoplay) {
-        let interval = this.options.interval ? this.options.interval : 3000; 
+        let interval = this.options.interval ? this.options.interval : 3000;
         this.intervalTime = setInterval(() => {
           this.index++;
           if (this.index > this.list.length - 1) {
@@ -111,7 +125,7 @@ export default {
      */
     onTouchStart(e) {
       this.touchStart = e.changedTouches[0]; // 记录开始触摸点
-      // 清楚定时器
+      // 清除定时器
       clearInterval(this.intervalTime);
     },
     /**
@@ -135,6 +149,17 @@ export default {
       this.handleMove();
       // 同时开启自动轮播
       this.handleLoopMove();
+    }
+  },
+  watch: {
+    list: function(e) {
+      this.calcWidth();
+    }
+  },
+  destroyed() {
+    // 清除定时器
+    if (this.autoplay) {
+      clearInterval(this.intervalTime);
     }
   }
 };
